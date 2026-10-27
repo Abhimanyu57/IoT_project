@@ -8,17 +8,15 @@ The ESP32 firmware reads a **real virtual DHT22** in Wokwi, drives **real virtua
 
 ---
 
-## What you do here vs over there
+## How to run it
 
-I built the circuit definition and C++ firmware **in this folder**. I cannot press Wokwi’s Start button inside your browser session, and I cannot inject temperature from Cursor.
+There is no phone/desktop GUI. Run the circuit in **[Wokwi](https://wokwi.com)** (browser). Save the Wokwi project if you want a shareable URL.
 
-**Over here (this repo):** firmware, `diagram.json`, thresholds, serial CLI.
+Host logic tests (no ESP32 required):
 
-**Over there (Wokwi in the browser):** compile, run, move the DHT22 slider, flip the fault switch, watch LEDs/relay/OLED.
-
-**Optional extra (only if you want MQTT on a phone/PC):** connect a client to HiveMQ’s public broker. That path is **not** the core controller.
-
-OpenCode is optional. The project is already implemented; you do not need it unless you want another assistant to edit files.
+```bash
+g++ -std=c++17 -I. -Itests/arduino_stub tests/test_zone.cpp zone_logic.cpp cooling.cpp -o /tmp/test_zone && /tmp/test_zone
+```
 
 ---
 
@@ -51,7 +49,7 @@ The control loop in `sketch.ino` **never waits** for Wi-Fi. If MQTT is down, coo
 | Part | Wokwi type | ESP32 pin | Role |
 |---|---|---|---|
 | ESP32 DevKit C v4 | `board-esp32-devkit-c-v4` | — | MCU |
-| DHT22 | `wokwi-dht22` | GPIO 4 (SDA) | Temperature / humidity |
+| DHT22 | `wokwi-dht22` | GPIO 15 (SDA) | Temperature / humidity |
 | SSD1306 OLED 128×64 | `board-ssd1306` | SDA 21, SCL 22 | Live UI |
 | Green / yellow / red LEDs | `wokwi-led` + 220 Ω | 25 / 26 / 27 | Zone |
 | Piezo buzzer | `wokwi-buzzer` | GPIO 14 | Audible alarm |
@@ -197,8 +195,9 @@ To compile without MQTT, set `#define CCG_ENABLE_MQTT 0` in `config.h`.
 | `inputs.*` | ACK + fault switch |
 | `serial_cli.*` | Runtime config |
 | `telemetry.*` | Optional Wi-Fi/MQTT |
-| `diagram.json` | Circuit |
+| `diagram.json` | Circuit (DHT22 data on GPIO 15) |
 | `libraries.txt` | Wokwi libraries |
+| `tests/test_zone.cpp` | Host tests for zone / cooling logic |
 
 ---
 

@@ -1,0 +1,12 @@
+# Build artifacts
+build/
+.pio/
+*.o
+*.elf
+*.bin
+tests/test_zone
+
+# Editor / OS
+.DS_Store
+.vscode/
+*.swp

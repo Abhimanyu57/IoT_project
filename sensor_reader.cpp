@@ -41,10 +41,15 @@ void sensorUpdate(uint32_t nowMs, SensorSample &out) {
   }
 
   TempAndHumidity v = gDht.getTempAndHumidity();
-  bool ok = (gDht.getStatus() == DHTesp::ERROR_NONE) &&
+  DHTesp::DHT_ERROR_t st = gDht.getStatus();
+  bool ok = (st == DHTesp::ERROR_NONE) &&
             !isnan(v.temperature) && !isnan(v.humidity) &&
             v.temperature > -40.0f && v.temperature < 80.0f &&
             v.humidity >= 0.0f && v.humidity <= 100.0f;
+  if (!ok) {
+    Serial.printf("[dht] fail status=%d %s rawT=%.2f rawH=%.1f\n", (int)st,
+                  gDht.getStatusString(), v.temperature, v.humidity);
+  }
 
   if (!ok) {
     gFailStreak = (gFailStreak < 255) ? (uint8_t)(gFailStreak + 1) : 255;

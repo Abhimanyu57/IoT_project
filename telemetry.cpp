@@ -14,8 +14,8 @@ static uint32_t gLastMqttAttempt = 0;
 static uint32_t gLastPub = 0;
 static bool gWifiUp = false;
 static bool gMqttUp = false;
-static Thresholds *gTh = nullptr;
-static SystemState *gState = nullptr;
+static Thresholds *gTelemTh = nullptr;
+static SystemState *gTelemState = nullptr;
 
 static void onMqtt(char *topic, byte *payload, unsigned int len) {
   char buf[96];
@@ -24,15 +24,15 @@ static void onMqtt(char *topic, byte *payload, unsigned int len) {
   buf[n] = '\0';
   Serial.printf("[mqtt] %s : %s\n", topic, buf);
 
-  if (!gState || !gTh) {
+  if (!gTelemState || !gTelemTh) {
     return;
   }
   if (strcmp(buf, "ack") == 0) {
-    zoneAcknowledge(*gState, millis());
+    zoneAcknowledge(*gTelemState, millis());
     return;
   }
   if (strcmp(buf, "reset") == 0) {
-    zoneReset(*gState, millis());
+    zoneReset(*gTelemState, millis());
     return;
   }
   if (strncmp(buf, "set ", 4) == 0) {
@@ -41,11 +41,11 @@ static void onMqtt(char *topic, byte *payload, unsigned int len) {
     char key[24];
     if (sscanf(buf + 4, "%23s %f", key, &v) == 2) {
       if (strcmp(key, "warn_high") == 0 && v > 0 && v < 40) {
-        gTh->warnHighC = v;
+        gTelemTh->warnHighC = v;
       } else if (strcmp(key, "warn_low") == 0 && v > -20 && v < 20) {
-        gTh->warnLowC = v;
+        gTelemTh->warnLowC = v;
       }
-      setEvent(*gState, "mqtt-set");
+      setEvent(*gTelemState, "mqtt-set");
     }
   }
 }
@@ -128,8 +128,8 @@ void telemetryInit() {
 }
 
 void telemetryUpdate(SystemState &state, Thresholds &th, uint32_t nowMs) {
-  gState = &state;
-  gTh = &th;
+  gTelemState = &state;
+  gTelemTh = &th;
   ensureWifi(nowMs);
   if (WiFi.status() == WL_CONNECTED && !gWifiUp) {
     gWifiUp = true;

@@ -9,7 +9,7 @@ static const char kFirmwareVersion[] = "1.0.0-sim";
 static const char kDeviceId[] = "ccg-esp32-01";
 
 // --- Pins (ESP32 DevKit C v4 / Wokwi) ------------------------------------
-static const int kPinDht = 4;
+static const int kPinDht = 15;  // Wokwi ESP32 DHT22 examples use GPIO 15
 static const int kPinOledSda = 21;
 static const int kPinOledScl = 22;
 static const int kPinLedGreen = 25;
