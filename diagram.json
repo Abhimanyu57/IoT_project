@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "author": "ColdChain Guardian (simulation)",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "oled1",
+      "top": -38.46,
+      "left": 230.63,
+      "attrs": { "i2cAddress": "0x3c" }
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": 82.5,
+      "left": 254.1,
+      "attrs": { "temperature": "5", "humidity": "60" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledG",
+      "top": -61.2,
+      "left": -111.4,
+      "attrs": { "color": "green", "label": "OK" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledY",
+      "top": -3.6,
+      "left": -111.4,
+      "attrs": { "color": "yellow", "label": "WARN" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledR",
+      "top": 54,
+      "left": -111.4,
+      "attrs": { "color": "red", "label": "CRIT" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledCool",
+      "top": 240,
+      "left": 172.2,
+      "attrs": { "color": "blue", "label": "COOL" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rG",
+      "top": -24.85,
+      "left": -77.05,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rY",
+      "top": 32.75,
+      "left": -77.05,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rR",
+      "top": 90.35,
+      "left": -77.05,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rCool",
+      "top": 253.55,
+      "left": 114.65,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": 117.6,
+      "left": -123.6,
+      "attrs": { "volume": "0.15" }
+    },
+    {
+      "type": "wokwi-relay-module",
+      "id": "relay1",
+      "top": 224.6,
+      "left": -19.2,
+      "attrs": { "transistor": "pnp" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnAck",
+      "top": 216.2,
+      "left": 230.4,
+      "attrs": { "color": "green", "label": "ACK", "key": "A", "bounce": "0" }
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "swFault",
+      "top": 224.3,
+      "left": 307.9,
+      "attrs": { "value": "1", "bounce": "0" }
+    }
+  ],
+  "connections": [
+    ["esp:TX", "$serialMonitor:RX", "", []],
+    ["esp:RX", "$serialMonitor:TX", "", []],
+
+    ["oled1:VCC", "esp:3V3", "red", ["v-19.2", "h-211.2"]],
+    ["oled1:GND", "esp:GND.2", "black", ["v-9.6", "h-192"]],
+    ["oled1:SDA", "esp:21", "green", ["v19.2", "h-86.4"]],
+    ["oled1:SCL", "esp:22", "blue", ["v28.8", "h-67.2"]],
+
+    ["dht1:VCC", "esp:3V3", "red", ["h-19.2", "v-134.4"]],
+    ["dht1:GND", "esp:GND.3", "black", ["h-38.4", "v38.4"]],
+    ["dht1:SDA", "esp:4", "orange", ["h-57.6", "v-38.4"]],
+
+    ["ledG:A", "rG:1", "green", []],
+    ["ledY:A", "rY:1", "gold", []],
+    ["ledR:A", "rR:1", "red", []],
+    ["rG:2", "esp:25", "green", ["v38.4", "h86.4"]],
+    ["rY:2", "esp:26", "gold", ["v19.2", "h86.4"]],
+    ["rR:2", "esp:27", "red", ["v0", "h86.4"]],
+    ["ledG:C", "esp:GND.1", "black", ["v192", "h86.4"]],
+    ["ledY:C", "esp:GND.1", "black", ["v134.4", "h86.4"]],
+    ["ledR:C", "esp:GND.1", "black", ["v76.8", "h86.4"]],
+
+    ["bz1:1", "esp:GND.1", "black", ["h19.2", "v57.6"]],
+    ["bz1:2", "esp:14", "#8f4814", ["h38.4", "v-19.2"]],
+
+    ["relay1:VCC", "esp:5V", "red", ["h19.2", "v-76.8"]],
+    ["relay1:GND", "esp:GND.3", "black", ["h9.6", "v-19.2"]],
+    ["relay1:IN", "esp:13", "magenta", ["h19.2", "v-48"]],
+
+    ["esp:5V", "rCool:1", "red", ["h19.2", "v211.2"]],
+    ["rCool:2", "ledCool:A", "blue", []],
+    ["ledCool:C", "relay1:NO", "blue", ["v19.2", "h-86.4"]],
+    ["relay1:COM", "esp:GND.3", "black", ["v38.4", "h76.8"]],
+
+    ["btnAck:1.l", "esp:GND.3", "black", ["v19.2", "h-76.8"]],
+    ["btnAck:2.l", "esp:32", "green", ["h-19.2", "v-76.8"]],
+
+    ["swFault:1", "esp:GND.3", "black", ["v28.8", "h-192"]],
+    ["swFault:2", "esp:33", "orange", ["h-9.6", "v-86.4"]]
+  ],
+  "dependencies": {}
+}
